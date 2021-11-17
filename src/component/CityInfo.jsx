@@ -1,17 +1,12 @@
-import axios from 'axios'
-import React, { useState,useEffect } from 'react'  
+import React, { useState } from 'react'  
+import useLocationData from '../hook/useLocationData'
 
+import Form from './Form'
 
+function CityInfo() {  
 
-function CityInfo() { 
-
-
-const [cityName,setCityName] = useState('') 
-
-const[cityDeatls,setCityDeatls] = useState([])  
-
-const[show,setShow] = useState(false)
-
+const {cityName,cityDeatls,setCityName} = useLocationData() 
+const[show,setShow] = useState(false)  
 
 
 
@@ -21,43 +16,6 @@ const[show,setShow] = useState(false)
      setCityName(e.target.value) 
  }
 
-
-  useEffect(() => { 
-
-     const SearchCity = async () => {  
-
-
-         const cityReq =  await axios.get(`https://eu1.locationiq.com/v1/search.php?key=${process.env.REACT_APP_LOCATIONANDMAPIQ_KEY}&q=${cityName}&format=json`) 
-
-        //  console.log(cityReq.data[0]);   
-
-         setCityDeatls(cityReq.data[0]) 
-        
-        
-     }   
-
-
-     
-     
-     
-     const time = setTimeout(() => {
-         
-         if(cityName.length) {
-            SearchCity(); 
-        }  
-
-        else if (!cityName.length) {
-
-            setCityDeatls('') 
-
-        }
-   
-     }, 2000);  
-
-     return () => clearTimeout(time) 
-     
-    
-  }, [cityName])
 
 
 
@@ -71,7 +29,7 @@ const[show,setShow] = useState(false)
 
  const mapurl = `https://maps.locationiq.com/v3/staticmap?
  key=${process.env.REACT_APP_LOCATIONANDMAPIQ_KEY}&center=${cityDeatls.lat},${cityDeatls.lon}
- &zoom=13&size=450x450&format=jpeg` 
+ &zoom=13&size=400x400&format=jpeg` 
 
 
 
@@ -79,26 +37,20 @@ const[show,setShow] = useState(false)
     return (
         <div> 
 
-            <map name=""></map>
+      <Form  
+       cityName={cityName}  
+       cityDeatls={cityDeatls} 
+        setCityName={setCityName} 
+        cityNameHandler={cityNameHandler}
+        SubmitHandler={SubmitHandler}  
+        show={show}
+        />  
 
-            <h1> Discover City   🧐✈️  </h1> 
-            <br />
-         
-        <form  >
-
-          <input type="text"  placeholder='Type city' value={cityName} onChange={cityNameHandler}/> 
-
-          <button onClick={SubmitHandler} > Search  </button> 
-          </form>
-
-          {show && <h3>  longitude :   {cityDeatls.lat}   /   latitude :  {cityDeatls.lon} </h3>  }
-          {show   && <h2> {cityName} </h2> }  
-
-      <div>
+          <> 
           {show && <img src={mapurl}
          alt="city map which search it" /> } 
-
-      </div>
+         </>
+    
 
         </div> 
 
